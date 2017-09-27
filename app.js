@@ -1,5 +1,6 @@
 const fs = require('fs');
 
-let file = fs.readFileSync(`${__dirname}/files/text.txt`);
+let text = (fs.readFileSync(`${__dirname}/files/text.txt`)).toString();
+let code = (fs.readFileSync(`${__dirname}/files/code.txt`)).toString();
 
-console.log(file);
+console.log(`${code} and ${text}`);
