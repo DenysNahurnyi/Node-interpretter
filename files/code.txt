@@ -1,1 +1,12 @@
-Some part of code
+var a
+var b
+var c
+Show(a)
+c = ConsistIn(a, b)
+c = IndexOf(a, b)
+c = "Hey"
+Show(c)
+
+if(ConsistIn(a, b))
+	while(a)
+		Delete(a, b)
