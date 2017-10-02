@@ -4,7 +4,7 @@ var c
 Show(a)
 c = ConsistIn(a, b)
 c = IndexOf(a, b)
-c = "Hey"
+d = IndexOf(a, b)
 Show(c)
 
 if(ConsistIn(a, b))
