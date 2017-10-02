@@ -1,10 +1,17 @@
 var a
 var b
 var c
-Show(a)
-c = ConsistIn(a, b)
+Show(a) // Yo
+c = ConsistIn(a, b) //Yo
 c = IndexOf(a, b)
+w = "daba"
+q = "Zaba daba"
+a = "daba"
+b = "1234612415"
 d = IndexOf(a, b)
+c = "645-19"
+Show(d)
+d = IndexOf(IndexOf(ConsistIn(w, q), b), c)//
 Show(c)
 
 if(ConsistIn(a, b))

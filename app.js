@@ -8,7 +8,10 @@ let code = (fs.readFileSync(`${__dirname}/files/code.txt`)).toString();
 
 // console.log(`${code} and ${text}`);
 
-let whileReg = new RegExp(/\w+/);
+exports.isFunction = function (str) {
+    return /\w+[(].+[)]/.test(str)
+}
+
 
 codeArr = code.split('\r\n');
 codeArr = codeArr.filter(item => item.length)
@@ -31,32 +34,37 @@ try {
     }
 } catch(err) {
     console.log(`Error happened with "${tmp.comment}" on line ${tmp.Id}`);
+    console.log(`This is Syntax error`);
+    console.log(GlobalContext);
     throw err
 }
 console.log(GlobalContext);
 
 function processLine(line, tmp, action) {
-    console.log("qwdwq",action)
     switch(action) {// Variable declaration
-    case "VarDecl" :
+    case "VarDecl" :{
         varDecl(line, tmp);
         break;
+    }
     // My own console.log
-    case "ShowFunc":
+    case "ShowFunc": {
         Show(line, tmp);
         break;
+    }
     // Intendation of smth to variable
-    case "funcIntendation":
+    case "funcIntendation":{
         let func = (/^(\w+) = (\w+[(].+[)])/.exec(line));
         GlobalContext[func[1]] = f.funcResult(func[2], tmp, GlobalContext);
         break;
+    }
         // This is string intendation
-    case "stringIntendation": 
+    case "stringIntendation":{ 
         tmp.comment = "Processing intentdation String value to variable";
         tmp.parentId = -1;
-        let result = /^(\w) = ["](\w+)["]/.exec(line);
+        let result = /^(\w) = ["](.+)["]/.exec(line);
         GlobalContext[result[1]] = result[2];
         break;
+    }
     default: return;
     // else if(/^if/.test(line)) {
     //     let result = /^if[()](\w+)[)]/.exec(line);
@@ -79,8 +87,8 @@ function whatAction(line) {
     else if(/^Show/.test(line)) return "ShowFunc";
     // Some kind of intendation
     else if(/^\w = .+/.test(line)) {
-        if(/^\w = (\w+)[(]/.test(line)) return "funcIntendation";
-        if(/^\w = ["](\w+)["]/.test(line)) return "stringIntendation";
+        if(exports.isFunction(line)) return "funcIntendation";
+        if(/^\w = ["](.+)["]/.test(line)) return "stringIntendation";
     }
 }
 
