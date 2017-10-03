@@ -16,29 +16,54 @@ exports.isFunction = function (str) {
 codeArr = code.split('\r\n');
 codeArr = codeArr.filter(item => item.length)
 GlobalContext.ifIsOpened = false;
-let tmp, action = null;
-try {
-    for(let i = 0; i < codeArr.length; i++){
+function main(){
+    let tmp, action = null;
+    try {
+        for(let i = 0; i < codeArr.length; i++){
 
-        tmp = {
-            Id: i + 1
-        };
-        action = whatAction(codeArr[i]);
-        if(notCondition(action)) processLine(codeArr[i], tmp, action);
-        else {
-            console.log("cond")
+            tmp = {
+                Id: i + 1
+            };
+            action = whatAction(codeArr[i]);
+            if(notCondition(action)) processLine(codeArr[i], tmp, action);
+            else {
+                if(action == 'ifCond') {
+                    tmp.ifContentLength = 0;
+                    tmp.ifCodeContent = [];
+                    for(let j = i + 1; j < codeArr.length; j++) {
+                        if(/^\t.+/.test(codeArr[j])) {
+                            tmp.ifContentLength++;
+                            tmp.ifCodeContent.push(codeArr[j]);
+                        } else if(/^if.+/.test(codeArr[j])){
+                            tmp.elseId = -1;
+                            break;
+                        } else if(/^else.+/.test(codeArr[j])){
+                            tmp.elseId = j;
+                            break;
+                        }
+                    }
+                    tmp.ifCodeContent = tmp.ifCodeContent.map(item =>  item.replace(/^\t/, ""))
+                    tmp.ifCodeContent.map(item => console.log(`ifCodeContent item: ${item}`));
+                }
+                else if(action == 'whileCond') {
+                    
+                }
+                else if(action == 'elseCond') throw new Error("Else can not be without if");
+            }
+
+            GlobalContext.code.push(tmp);
+            console.log(`Line ${i} processed...\n`)
         }
-
-        GlobalContext.code.push(tmp);
-        console.log(`Line ${i} processed...\n`)
+    } catch(err) {
+        console.log(`Error happened with "${tmp.comment}" on line ${tmp.Id}`);
+        console.log(`This is Syntax error`);
+        console.log(GlobalContext);
+        throw err
+    } finally {
+        console.log(GlobalContext);
     }
-} catch(err) {
-    console.log(`Error happened with "${tmp.comment}" on line ${tmp.Id}`);
-    console.log(`This is Syntax error`);
-    console.log(GlobalContext);
-    throw err
 }
-console.log(GlobalContext);
+
 
 function processLine(line, tmp, action) {
     switch(action) {// Variable declaration
@@ -90,6 +115,10 @@ function whatAction(line) {
         if(exports.isFunction(line)) return "funcIntendation";
         if(/^\w = ["](.+)["]/.test(line)) return "stringIntendation";
     }
+    else if(/^if[(]/.test(line)) return "ifCond";
+    else if(/^else[(]/.test(line)) return "elseCond";
+    else if(/^while[(]/.test(line)) return "whileCond";
+    // throw new Error(`Syntax error, unknown code: ${line}`)
 }
 
 function Show(line, tmp) {
@@ -107,4 +136,6 @@ function varDecl(line, tmp) {
     tmp.variableName = result[1];
     GlobalContext[tmp.variableName] = "Hello";
 }
+
+main();
 
