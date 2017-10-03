@@ -1,19 +1,19 @@
-var a
-var b
-var c
-Show(a) // Yo
-c = ConsistIn(a, b) //Yo
-c = IndexOf(a, b)
-w = "daba"
-q = "Zaba daba"
-a = "daba"
-b = "1234612415"
-d = IndexOf(a, b)
-c = "645-19"
-Show(d)
-d = IndexOf(IndexOf(ConsistIn(w, q), b), c)//
-Show(c)
+var a // 1
+var b // 2
+var c // 3
+Show(a) // 4
+c = ConsistIn(a, b) // 5
+c = IndexOf(a, b) // 6
+w = "daba" // 7
+q = "Zaba daba" // 8
+a = "daba" // 9
+b = "1234612415"// 10
+d = IndexOf(a, b) // 11
+c = "645-19" // 12
+Show(d) // 13
+d = IndexOf(IndexOf(ConsistIn(w, q), b), c) // 14
+Show(c)  // 15
 
-if(ConsistIn(a, b))
-	while(a)
-		Delete(a, b)
+if(ConsistIn(a, b))  // 16
+	while(a)  // 17
+		Delete(a, b)  // 18

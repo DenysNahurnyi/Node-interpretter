@@ -103,7 +103,7 @@ function Show(line, tmp) {
 function varDecl(line, tmp) {
     tmp.comment = "Variable declaration";
     tmp.parentId = -1;
-    let result = /^var (.+)/.exec(line);
+    let result = /^var (\S+)/.exec(line);
     tmp.variableName = result[1];
     GlobalContext[tmp.variableName] = "Hello";
 }
