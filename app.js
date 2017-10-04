@@ -26,37 +26,7 @@ function main(codeArrLocal){
             action = whatAction(codeArrLocal[i]);
             if(notCondition(action)) processLine(codeArrLocal[i], tmp, action);
             else {
-                if(action == 'ifCond') {
-                    tmp.ifContentLength = 0;
-                    tmp.ifCodeContent = [];
-                    for(let j = i + 1; j < codeArrLocal.length; j++) {
-                        if(/^\t.+/.test(codeArrLocal[j])) {
-                            tmp.ifContentLength++;
-                            tmp.ifCodeContent.push(codeArrLocal[j]);
-                        } else if(/^if.+/.test(codeArrLocal[j])){
-                            tmp.elseId = -1;
-                            break;
-                        } else if(/^else.+/.test(codeArrLocal[j])){
-                            tmp.elseId = j;
-                            break;
-                        }
-                    }
-                    let conditionFunc = /^if[ ]?[(](.+)[)]/.exec(codeArrLocal[i])[1];
-                    const conditionResult = f.funcResult(conditionFunc, tmp, GlobalContext);
-                    tmp.ifCodeContent = tmp.ifCodeContent.map(item =>  item.replace(/^\t/, ""))
-                    tmp.ifCodeContent.map(item => console.log(`ifCodeContent item: ${item}`));
-                    if(conditionResult) {
-                        console.log(`If on line ${tmp.Id} executing`)
-                        main(tmp.ifCodeContent)
-                    } else {
-                        console.log(`If on line ${tmp.Id} not executing`)
-                    }
-                    i += tmp.ifCodeContent.length              
-                }
-                else if(action == 'whileCond') {
-                    
-                }
-                else if(action == 'elseCond') throw new Error("Else can not be without if");
+                i += processCondition(codeArrLocal[i], tmp, action, codeArrLocal, i)
             }
 
             GlobalContext.code.push(tmp);
@@ -72,7 +42,40 @@ function main(codeArrLocal){
     }
 }
 
-
+function processCondition(line, tmp, action, codeArrLocal, outerIndex) {
+    GlobalContext.ifIsOpened = true
+    if(action == 'ifCond') {
+        tmp.ifContentLength = 0;
+        tmp.ifCodeContent = [];
+        for(let j = outerIndex + 1; j < codeArrLocal.length; j++) {
+            if(/^\t.+/.test(codeArrLocal[j])) {
+                tmp.ifContentLength++;
+                tmp.ifCodeContent.push(codeArrLocal[j]);
+            } else if(/^if.+/.test(codeArrLocal[j])){
+                tmp.elseId = -1;
+                break;
+            } else if(/^else.+/.test(codeArrLocal[j])){
+                tmp.elseId = j;
+                break;
+            }
+        }
+        let conditionFunc = /^if[ ]?[(](.+)[)]/.exec(codeArrLocal[outerIndex])[1];
+        const conditionResult = f.funcResult(conditionFunc, tmp, GlobalContext);
+        tmp.ifCodeContent = tmp.ifCodeContent.map(item =>  item.replace(/^\t/, ""))
+        tmp.ifCodeContent.map(item => console.log(`ifCodeContent item: ${item}`));
+        if(conditionResult) {
+            console.log(`If on line ${tmp.Id} executing`)
+            main(tmp.ifCodeContent)
+        } else {
+            console.log(`If on line ${tmp.Id} not executing`)
+        }
+        return tmp.ifCodeContent.length;    
+    }
+    else if(action == 'whileCond') {
+        
+    }
+    else if(action == 'elseCond') throw new Error("Else can not be without if");
+}
 
 
 function processLine(line, tmp, action) {
