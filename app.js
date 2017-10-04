@@ -16,34 +16,42 @@ exports.isFunction = function (str) {
 codeArr = code.split('\r\n');
 codeArr = codeArr.filter(item => item.length)
 GlobalContext.ifIsOpened = false;
-function main(){
+function main(codeArrLocal){
     let tmp, action = null;
     try {
-        for(let i = 0; i < codeArr.length; i++){
-
+        for(let i = 0; i < codeArrLocal.length; i++){
             tmp = {
                 Id: i + 1
             };
-            action = whatAction(codeArr[i]);
-            if(notCondition(action)) processLine(codeArr[i], tmp, action);
+            action = whatAction(codeArrLocal[i]);
+            if(notCondition(action)) processLine(codeArrLocal[i], tmp, action);
             else {
                 if(action == 'ifCond') {
                     tmp.ifContentLength = 0;
                     tmp.ifCodeContent = [];
-                    for(let j = i + 1; j < codeArr.length; j++) {
-                        if(/^\t.+/.test(codeArr[j])) {
+                    for(let j = i + 1; j < codeArrLocal.length; j++) {
+                        if(/^\t.+/.test(codeArrLocal[j])) {
                             tmp.ifContentLength++;
-                            tmp.ifCodeContent.push(codeArr[j]);
-                        } else if(/^if.+/.test(codeArr[j])){
+                            tmp.ifCodeContent.push(codeArrLocal[j]);
+                        } else if(/^if.+/.test(codeArrLocal[j])){
                             tmp.elseId = -1;
                             break;
-                        } else if(/^else.+/.test(codeArr[j])){
+                        } else if(/^else.+/.test(codeArrLocal[j])){
                             tmp.elseId = j;
                             break;
                         }
                     }
+                    let conditionFunc = /^if[ ]?[(](.+)[)]/.exec(codeArrLocal[i])[1];
+                    const conditionResult = f.funcResult(conditionFunc, tmp, GlobalContext);
                     tmp.ifCodeContent = tmp.ifCodeContent.map(item =>  item.replace(/^\t/, ""))
                     tmp.ifCodeContent.map(item => console.log(`ifCodeContent item: ${item}`));
+                    if(conditionResult) {
+                        console.log(`If on line ${tmp.Id} executing`)
+                        main(tmp.ifCodeContent)
+                    } else {
+                        console.log(`If on line ${tmp.Id} not executing`)
+                    }
+                    i += tmp.ifCodeContent.length              
                 }
                 else if(action == 'whileCond') {
                     
@@ -60,9 +68,11 @@ function main(){
         console.log(GlobalContext);
         throw err
     } finally {
-        console.log(GlobalContext);
+        // console.log(GlobalContext);
     }
 }
+
+
 
 
 function processLine(line, tmp, action) {
@@ -137,5 +147,5 @@ function varDecl(line, tmp) {
     GlobalContext[tmp.variableName] = "Hello";
 }
 
-main();
+main(codeArr);
 

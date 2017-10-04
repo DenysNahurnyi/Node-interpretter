@@ -13,7 +13,6 @@ c = "645-19" // 12
 Show(d) // 13
 d = IndexOf(IndexOf(ConsistIn(w, q), b), c) // 14
 Show(c)  // 15
-if(ConsistIn(a, b))  // 16
-	while(a)  // 17
-		Delete(a, b)  // 18
-	Delete(a, b) // 19
+if(ConsistIn(a, a))  // 16
+	Show(a) // 17
+Show(a) // 18
