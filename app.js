@@ -51,11 +51,7 @@ function processCondition(line, tmp, action, codeArrLocal, outerIndex) {
             if(/^\t.+/.test(codeArrLocal[j])) {
                 tmp.ifContentLength++;
                 tmp.ifCodeContent.push(codeArrLocal[j]);
-            } else if(/^if.+/.test(codeArrLocal[j])){
-                tmp.elseId = -1;
-                break;
-            } else if(/^else.+/.test(codeArrLocal[j])){
-                tmp.elseId = j;
+            } else if(/^\w.+/.test(codeArrLocal[j])){
                 break;
             }
         }
@@ -72,7 +68,33 @@ function processCondition(line, tmp, action, codeArrLocal, outerIndex) {
         return tmp.ifCodeContent.length;    
     }
     else if(action == 'whileCond') {
-        
+        // -------------------------------------------
+        tmp.whileContentLength = 0;
+        tmp.whileCodeContent = [];
+        for(let j = outerIndex + 1; j < codeArrLocal.length; j++) {
+            if(/^\t.+/.test(codeArrLocal[j])) {
+                tmp.whileContentLength++;
+                tmp.whileCodeContent.push(codeArrLocal[j]);
+            } else if(/^\w+/.test(codeArrLocal[j])){
+                break;
+            }
+        }
+        let conditionFunc = /^while[ ]?[(](.+)[)]/.exec(codeArrLocal[outerIndex])[1];
+        while(true){
+            const conditionResult = f.funcResult(conditionFunc, tmp, GlobalContext);
+            console.log(`while condition result: ${conditionResult}`)
+            tmp.whileCodeContent = tmp.whileCodeContent.map(item =>  item.replace(/^\t/, ""))
+            tmp.whileCodeContent.map(item => console.log(`whileCodeContent item: ${item}`));
+            if(conditionResult) {
+                console.log(`while on line ${tmp.Id} executing`)
+                main(tmp.whileCodeContent)
+            } else {
+                console.log(`while on line ${tmp.Id} not executing`);
+                break;
+            }
+        }
+        return tmp.whileCodeContent.length;
+        // -------------------------------------------
     }
     else if(action == 'elseCond') throw new Error("Else can not be without if");
 }
@@ -104,12 +126,10 @@ function processLine(line, tmp, action) {
         break;
     }
     default: return;
-    // else if(/^if/.test(line)) {
-    //     let result = /^if[()](\w+)[)]/.exec(line);
-
-    // }
-    // else if(/^else/.test(line)) console.log("else cond");
-    // else if(/^while/.test(line)) console.log("While cond");}
+        console.log(`Error happened with "${tmp.comment}" on line ${tmp.Id}`);
+        console.log(`This error because of unknown expression`);
+        console.log(GlobalContext);
+        throw new Error(`This error because of unknown expression`);
     }
 }
 
@@ -131,7 +151,7 @@ function whatAction(line) {
     else if(/^if[(]/.test(line)) return "ifCond";
     else if(/^else[(]/.test(line)) return "elseCond";
     else if(/^while[(]/.test(line)) return "whileCond";
-    // throw new Error(`Syntax error, unknown code: ${line}`)
+    throw new Error(`Syntax error, unknown code: ${line}`)
 }
 
 function Show(line, tmp) {

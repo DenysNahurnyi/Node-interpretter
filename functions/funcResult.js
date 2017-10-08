@@ -4,18 +4,40 @@ exports.funcResult = function(func, lineDescribeObject, GlobalContext) {
     let funcName = (/(\w+)[(].+[)]/.exec(func))[1];
     switch(funcName){
         case 'ConsistIn': {
-            let result = /^ConsistIn[(](.+), (.+)[)]/.exec(func);
-            result[1] = app.isFunction(result[1]) ? exports.funcResult(result[1], lineDescribeObject, GlobalContext) : result[1];
-            result[2] = app.isFunction(result[2]) ? exports.funcResult(result[2], lineDescribeObject, GlobalContext) : result[2];
-            let regexp = new RegExp(GlobalContext[result[1]]);
-            let string = GlobalContext[result[2]];
+            let result = [];
+            [result[1], result[2]] = getArguments(func);
+
+            console.log(`Results of exec : ${result[1]} and ${result[2]}`)
+            let regexp = result[1], string = result[2];
+            if(app.isFunction(regexp)) {
+                while(app.isFunction(regexp)){
+                    console.log(`Result 1 before transform: ${regexp}`)
+                    regexp = exports.funcResult(regexp, lineDescribeObject, GlobalContext)
+                    console.log(`Result 1 after transform: ${regexp} and it's function: ${app.isFunction(regexp)}`)    
+                }            
+            } else {
+                regexp = GlobalContext[result[1]];
+                console.log(`Value 1: ${regexp}`)
+            }
+            if(app.isFunction(string)) {
+                while(app.isFunction(string)){
+                    console.log(`Result 2 before transform: ${string}`)
+                    string = exports.funcResult(string, lineDescribeObject, GlobalContext)
+                    console.log(`Result 2 after transform: ${string} and it's function: ${app.isFunction(string)}`)    
+                }            
+            } else {
+                string = GlobalContext[result[2]].toString();
+                console.log(`Value 2: ${string}`)
+            }
             lineDescribeObject.comment = "Processing function ConsistIn";
             lineDescribeObject.parentId = -1;
+            regexp = new RegExp(regexp);
 
             return regexp.test(string);
         }
         case 'IndexOf': {
-            let result = /^IndexOf[(](.+), (.+)[)]/.exec(func);
+            let result = [];
+            [result[1], result[2]] = getArguments(func);
             console.log(`Results of exec : ${result[1]} and ${result[2]}`)
             let value = result[1], string = result[2];
             if(app.isFunction(value)) {
@@ -26,7 +48,7 @@ exports.funcResult = function(func, lineDescribeObject, GlobalContext) {
                 }            
             } else {
                 value = GlobalContext[result[1]];
-                console.log(`Value 1 : ${value}`)
+                console.log(`Value 1: ${value}`)
             }
             if(app.isFunction(string)) {
                 while(app.isFunction(string)){
@@ -43,5 +65,15 @@ exports.funcResult = function(func, lineDescribeObject, GlobalContext) {
 
             return string.indexOf(value);
         }
+    }
+}
+
+function getArguments(funcLine) {
+    if(/^\w+[(](\w+[(].+[)])[,].+/.test(funcLine)){
+        let result = /^\w+[(](\w+[(].+[)])[,][ ]?(.+)[)]/.exec(funcLine);
+        return [result[1], result[2]];
+    } else {
+        let result = /^\w+[(](\w+)[,][ ]?(.+)[)]/.exec(funcLine);
+        return [result[1], result[2]];
     }
 }

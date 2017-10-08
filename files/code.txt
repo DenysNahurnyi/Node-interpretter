@@ -2,17 +2,21 @@ var a // 1
 var b // 2
 var c // 3
 Show(a) // 4
-c = ConsistIn(a, b) // 5
+c = ConsistIn(ConsistIn(a, ConsistIn(a, b)), ConsistIn(b, b)) // 5
 c = IndexOf(a, b) // 6
 w = "daba" // 7
 q = "Zaba daba" // 8
-a = "daba" // 9
+a = "34" // 9
 b = "1234612415"// 10
 d = IndexOf(a, b) // 11
 c = "645-19" // 12
 Show(d) // 13
-d = IndexOf(IndexOf(ConsistIn(w, q), b), c) // 14
+d = IndexOf(ConsistIn(ConsistIn(w, q), b), c) // 14
 Show(c)  // 15
 if(ConsistIn(a, a))  // 16
-	Show(a) // 17
-Show(a) // 18
+	while(IndexOf(a, b)) // 17
+		a = IndexOf(a, b)
+		Show(a) // 18
+		Show(b) // 19
+Show(qwd)
+Show(a) // 20
