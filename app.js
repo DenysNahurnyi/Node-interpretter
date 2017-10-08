@@ -49,6 +49,7 @@ function main(codeArrLocal){
         console.log(`This is Syntax error`);
         console.log(GlobalContext);
         throw err
+        process.exit(1);
     } finally {
         console.log(GlobalContext);
     }
