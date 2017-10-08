@@ -42,7 +42,6 @@ function main(codeArrLocal){
             }
 
             GlobalContext.code.push(tmp);
-            console.log(`Line ${i} processed...\n`)
         }
     } catch(err) {
         console.log(`Error happened with "${tmp.comment}" on line ${tmp.Id}`);
@@ -50,7 +49,6 @@ function main(codeArrLocal){
         console.log(GlobalContext);
         throw err
     } finally {
-        console.log(GlobalContext);
     }
 }
 
@@ -70,12 +68,8 @@ function processCondition(line, tmp, action, codeArrLocal, outerIndex) {
         let conditionFunc = /^if[ ]?[(](.+)[)]/.exec(codeArrLocal[outerIndex])[1];
         const conditionResult = f.funcResult(conditionFunc, tmp, GlobalContext);
         tmp.ifCodeContent = tmp.ifCodeContent.map(item =>  item.replace(/^\t/, ""))
-        tmp.ifCodeContent.map(item => console.log(`ifCodeContent item: ${item}`));
         if(conditionResult) {
-            console.log(`If on line ${tmp.Id} executing`)
             main(tmp.ifCodeContent)
-        } else {
-            console.log(`If on line ${tmp.Id} not executing`)
         }
         return tmp.ifCodeContent.length;    
     }
@@ -93,14 +87,10 @@ function processCondition(line, tmp, action, codeArrLocal, outerIndex) {
         let conditionFunc = /^while[ ]?[(](.+)[)]/.exec(codeArrLocal[outerIndex])[1];
         while(true){
             const conditionResult = f.funcResult(conditionFunc, tmp, GlobalContext);
-            console.log(`while condition result: ${conditionResult}`)
             tmp.whileCodeContent = tmp.whileCodeContent.map(item =>  item.replace(/^\t/, ""))
-            tmp.whileCodeContent.map(item => console.log(`whileCodeContent item: ${item}`));
             if(conditionResult) {
-                console.log(`while on line ${tmp.Id} executing`)
                 main(tmp.whileCodeContent)
             } else {
-                console.log(`while on line ${tmp.Id} not executing`);
                 break;
             }
         }
@@ -189,7 +179,6 @@ codeFile().then(file => {
 function codeFile() {
     return new Promise(res => {
         rl.question('What do you think of Node.js? ', (answer) => {
-            console.log(`Thank you for your valuable feedback: ${answer}`);
             res(answer);
             rl.close();
         });
