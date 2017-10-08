@@ -1,20 +1,36 @@
 const fs = require('fs');
+const readline = require('readline');
 const f = require('./functions/funcResult.js')
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
 const GlobalContext = {};
-GlobalContext.code = []
-
-let text = (fs.readFileSync(`${__dirname}/files/text.txt`)).toString();
-let code = (fs.readFileSync(`${__dirname}/files/code.txt`)).toString();
-
-// console.log(`${code} and ${text}`);
+let codeArr;
+GlobalContext.code = [];
 
 exports.isFunction = function (str) {
     return /\w+[(].+[)]/.test(str)
 }
 
 
-codeArr = code.split('\r\n');
-codeArr = codeArr.filter(item => item.length)
+
+// console.log(`${code} and ${text}`);
+
+function preStart(file) {
+    try {
+        let code = (fs.readFileSync(`${__dirname}/files/${file}`)).toString();
+        codeArr = code.split('\r\n');
+        codeArr = codeArr.filter(item => item.length)
+        return codeArr;
+    } catch(err) {
+        console.log("No such file exist");
+        process.exit(1)
+    }
+}
+
+
+
 GlobalContext.ifIsOpened = false;
 function main(codeArrLocal){
     let tmp, action = null;
@@ -170,5 +186,22 @@ function varDecl(line, tmp) {
     GlobalContext[tmp.variableName] = "Hello";
 }
 
-main(codeArr);
+codeFile().then(file => {
+    preStart(file)
+    main(codeArr);
+});
 
+
+
+
+
+function codeFile() {
+    return new Promise(res => {
+        rl.question('What do you think of Node.js? ', (answer) => {
+            console.log(`Thank you for your valuable feedback: ${answer}`);
+            res(answer);
+            rl.close();
+        });
+        // rej(new Error("Some error in input"));
+    })
+}
