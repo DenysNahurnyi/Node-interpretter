@@ -189,8 +189,7 @@ codeFile().then(file => {
 
 function codeFile() {
     return new Promise(res => {
-        rl.question('What do you think of Node.js? ', (answer) => {
-            console.log(`Thank you for your valuable feedback: ${answer}`);
+        rl.question('Which file interpreter should read? ', (answer) => {
             res(answer);
             rl.close();
         });
