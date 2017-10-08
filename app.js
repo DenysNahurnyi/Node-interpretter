@@ -13,10 +13,6 @@ exports.isFunction = function (str) {
     return /\w+[(].+[)]/.test(str)
 }
 
-
-
-// console.log(`${code} and ${text}`);
-
 function preStart(file) {
     try {
         let code = (fs.readFileSync(`${__dirname}/files/${file}`)).toString();
@@ -54,7 +50,7 @@ function main(codeArrLocal){
         console.log(GlobalContext);
         throw err
     } finally {
-        // console.log(GlobalContext);
+        console.log(GlobalContext);
     }
 }
 
@@ -84,7 +80,6 @@ function processCondition(line, tmp, action, codeArrLocal, outerIndex) {
         return tmp.ifCodeContent.length;    
     }
     else if(action == 'whileCond') {
-        // -------------------------------------------
         tmp.whileContentLength = 0;
         tmp.whileCodeContent = [];
         for(let j = outerIndex + 1; j < codeArrLocal.length; j++) {
@@ -110,7 +105,6 @@ function processCondition(line, tmp, action, codeArrLocal, outerIndex) {
             }
         }
         return tmp.whileCodeContent.length;
-        // -------------------------------------------
     }
     else if(action == 'elseCond') throw new Error("Else can not be without if");
 }
@@ -192,9 +186,6 @@ codeFile().then(file => {
 });
 
 
-
-
-
 function codeFile() {
     return new Promise(res => {
         rl.question('What do you think of Node.js? ', (answer) => {
@@ -202,6 +193,5 @@ function codeFile() {
             res(answer);
             rl.close();
         });
-        // rej(new Error("Some error in input"));
     })
 }
