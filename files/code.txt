@@ -18,5 +18,4 @@ if(ConsistIn(a, a))  // 16
 		a = IndexOf(a, b)
 		Show(a) // 18
 		Show(b) // 19
-Show(qwd)
 Show(a) // 20
